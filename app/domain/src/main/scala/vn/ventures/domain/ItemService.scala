@@ -2,22 +2,22 @@ package vn.ventures.domain
 
 import zio.*
 
-object ItemService {
+object ItemService:
 
-  def addItem(name: String, price: BigDecimal): ZIO[ItemRepository, DomainError, Long] =
+  def addItem(name: String, price: BigDecimal): ZIO[ItemRepository, DomainError, ItemId] =
     ZIO.serviceWithZIO[ItemRepository](_.add(ItemData(name, price)))
 
-  def deleteItem(id: Long): ZIO[ItemRepository, DomainError, Long] =
+  def deleteItem(id: ItemId): ZIO[ItemRepository, DomainError, Long] =
     ZIO.serviceWithZIO[ItemRepository](_.delete(id))
 
   def getAllItems: ZIO[ItemRepository, DomainError, List[Item]] =
     ZIO.serviceWithZIO[ItemRepository](_.getAll)
 
-  def getItemById(id: Long): ZIO[ItemRepository, DomainError, Option[Item]] =
+  def getItemById(id: ItemId): ZIO[ItemRepository, DomainError, Option[Item]] =
     ZIO.serviceWithZIO[ItemRepository](_.getById(id))
 
   def updateItem(
-      id: Long,
+      id: ItemId,
       name: String,
       price: BigDecimal
   ): ZIO[ItemRepository, DomainError, Option[Item]] =
@@ -28,7 +28,7 @@ object ItemService {
     } yield maybeUpdated.map(_ => Item.withData(id, data))
 
   def partialUpdateItem(
-      id: Long,
+      id: ItemId,
       name: Option[String],
       price: Option[BigDecimal]
   ): ZIO[ItemRepository, DomainError, Option[Item]] =
@@ -38,4 +38,3 @@ object ItemService {
       data = ItemData(name.getOrElse(currentItem.name), price.getOrElse(currentItem.price))
       _ <- repo.update(id, data).some
     } yield Item.withData(id, data)).unsome
-}

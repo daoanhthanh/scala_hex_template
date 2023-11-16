@@ -7,16 +7,16 @@ import zio.http.*
 
 private[primaryAdapter] object Utils:
 
-  def extractLong(str: String): IO[ValidationError, Long] =
-    ZIO
-      .attempt(str.toLong)
-      .refineToOrDie[NumberFormatException]
-      .mapError(err => ValidationError(err.getMessage))
+  def handleError(err: Throwable): UIO[Response] = {
+    err.toErrResponse
+  }
 
-  def handleError(err: DomainError): UIO[Response] = err match {
-    case NotFoundError          => ZIO.succeed(Response.status(Status.NotFound))
-    case ValidationError(msg)   => msg.toResponseZIO(Status.BadRequest)
-    case RepositoryError(cause) =>
-      ZIO.logErrorCause(cause.getMessage, Cause.fail(cause)) *>
-        "Internal server error, contact system administrator".toResponseZIO(Status.InternalServerError)
+  def logDeviceInfo(accountId: String, request: Request): Unit = {
+    ZIO.debug(
+      s"Authenticated accountId: $accountId header info ${request.headers.get("User-Agent").getOrElse("NONE")}"
+    )
+  }
+
+  def logDeviceInfo(request: Request): Unit = {
+    ZIO.debug(s"header info ${request.headers.get("User-Agent").getOrElse("NONE")}")
   }

@@ -8,12 +8,12 @@ import org.flywaydb.core.api.configuration.FluentConfiguration
 
 import scala.jdk.CollectionConverters.*
 
-object DBMigrations extends LazyLogging {
+object DBMigrations extends LazyLogging:
   def migrate[F[_]: Sync](config: JdbcDatabaseConfig): F[Int] =
     Sync[F].delay {
       logger.info(
         "Running migrations from locations: " +
-        config.migrationsLocations.mkString(", ")
+          config.migrationsLocations.mkString(", ")
       )
       val count = unsafeMigrate(config)
       logger.info(s"Executed $count migrations")
@@ -57,4 +57,3 @@ object DBMigrations extends LazyLogging {
                        |  - errorMessage: ${error.errorDetails.errorMessage}
             """.stripMargin.strip)
   }
-}

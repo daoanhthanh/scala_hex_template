@@ -7,7 +7,8 @@ final case class JdbcDatabaseConfig(
     user: String,
     password: String,
     migrationsTable: String,
-    migrationsLocations: List[String]
+    migrationsLocations: List[String],
+    autoRun: Boolean
 )
 
 object JdbcDatabaseConfig {
@@ -19,10 +20,11 @@ object JdbcDatabaseConfig {
       config.getString("user"),
       config.getString("password"),
       config.getString("migrationsTable"),
-      config.getStringList("migrationsLocations").asScala.toList
+      config.getStringList("migrationsLocations").asScala.toList,
+      config.getBoolean("autoRun")
     )
   }
-}
 
+}
 
 // docker run --rm --name mysql-local -e MYSQL_ROOT_PASSWORD=example -p 3666:3306 mysql:8.1.0 --restart always

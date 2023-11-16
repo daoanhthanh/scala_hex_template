@@ -6,15 +6,16 @@ object Dependencies {
     "io.monix"               %% "monix"       % "3.4.1",
     "com.github.nscala-time" %% "nscala-time" % "2.32.0",
     // test
-    "dev.zio"      %% "zio-test"                        % zioVersion            % Test,
-    "dev.zio"      %% "zio-test-sbt"                    % zioVersion            % Test,
-    "dev.zio"      %% "zio-test-junit"                  % zioVersion            % Test,
-    "dev.zio"      %% "zio-mock"                        % zioMockVersion        % Test,
-    "com.dimafeng" %% "testcontainers-scala-postgresql" % testContainersVersion % Test,
-    "dev.zio"      %% "zio-test-magnolia"               % zioVersion            % Test,
-    "dev.zio"      %% "zio-config-magnolia"             % zioConfigVersion,
-    "dev.zio"      %% "zio-config"                      % zioConfigVersion,
-    "dev.zio"      %% "zio-config-typesafe"             % zioConfigVersion
+    "dev.zio"       %% "zio-test"                        % zioVersion            % Test,
+    "dev.zio"       %% "zio-test-sbt"                    % zioVersion            % Test,
+    "dev.zio"       %% "zio-test-junit"                  % zioVersion            % Test,
+    "dev.zio"       %% "zio-mock"                        % zioMockVersion        % Test,
+    "com.dimafeng"  %% "testcontainers-scala-postgresql" % testContainersVersion % Test,
+    "dev.zio"       %% "zio-test-magnolia"               % zioVersion            % Test,
+    "dev.zio"       %% "zio-config-magnolia"             % zioConfigVersion,
+    "dev.zio"       %% "zio-config"                      % zioConfigVersion,
+    "dev.zio"       %% "zio-config-typesafe"             % zioConfigVersion,
+    "org.scalameta" %% "munit"                           % "0.7.29"              % Test
   ) ++ logDependencies
 
   lazy val logDependencies: Seq[ModuleID] = Seq(
@@ -24,14 +25,14 @@ object Dependencies {
   )
 
   lazy val dbDependencies: Seq[ModuleID] = Seq(
-//    "com.h2database" % "h2"                % "2.2.224" % Test,
 //    "org.postgresql" % "postgresql"          % postgresqlVersion,
-    "com.mysql"    % "mysql-connector-j" % "8.0.33",
-    "io.getquill" %% "quill-jdbc"        % "4.8.0",
-    "io.getquill" %% "quill-jdbc-zio"    % quillVersion excludeAll ExclusionRule(organization = "org.scala-lang.modules"),
-    "dev.zio"     %% "zio"               % zioVersion,
-    "dev.zio"     %% "zio-streams"       % zioVersion,
-    "org.flywaydb" % "flyway-mysql"      % "10.0.0"
+    "com.h2database" % "h2"                % "2.2.224",
+    "com.mysql"      % "mysql-connector-j" % "8.0.33",
+    "io.getquill"   %% "quill-jdbc"        % "4.8.0",
+    "io.getquill" %% "quill-jdbc-zio" % quillVersion excludeAll ExclusionRule(organization = "org.scala-lang.modules"),
+    "dev.zio"     %% "zio"            % zioVersion,
+    "dev.zio"     %% "zio-streams"    % zioVersion,
+    "org.flywaydb" % "flyway-mysql"   % "10.0.0"
 
 //    "org.flywaydb"  %% "flyway-play"       % "9.0.0"
   )
@@ -40,9 +41,10 @@ object Dependencies {
     "dev.zio" %% "zio-http" % zioHttpVersion,
     "dev.zio" %% "zio-json" % zioJsonVersion
   )
-  lazy val bcryptDependency = "org.mindrot"           % "jbcrypt"           % "0.4"
-  lazy val paseto           = "io.github.nbaars"      % "paseto4j-version3" % "2023.1"
-  lazy val snowflake4s      = "io.github.flintersvn" %% "snowflake4s"       % "0.2.0"
+  lazy val bcryptDependency = "org.mindrot"               % "jbcrypt"           % "0.4"
+  lazy val paseto           = "io.github.nbaars"          % "paseto4j-version3" % "2023.1"
+  lazy val snowflakeID      = "de.mkammerer.snowflake-id" % "snowflake-id"      % "0.0.2"
+  lazy val snowflake4s      = "io.github.flintersvn"     %% "snowflake4s"       % "0.2.0"
   val zioVersion            = "2.0.13"
   val zioJsonVersion        = "0.5.0"
   val zioConfigVersion      = "3.0.7"

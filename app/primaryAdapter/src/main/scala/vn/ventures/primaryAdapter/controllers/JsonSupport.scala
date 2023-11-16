@@ -1,17 +1,18 @@
 package vn.ventures.primaryAdapter.controllers
 
+import vn.ventures.domain.authentication.AuthenticatedEntity
 import vn.ventures.domain.{Item, ItemId}
+import vn.ventures.primaryAdapter.forms.*
 import zio.json.*
-
-final case class UpdateItemRequest(name: String, price: BigDecimal)
-final case class PartialUpdateItemRequest(name: Option[String], price: Option[BigDecimal])
-final case class CreateItemRequest(name: String, price: BigDecimal)
 
 trait JsonSupport {
   implicit val itemIdEncoder: JsonEncoder[ItemId] = JsonEncoder[Long].contramap(_.value)
   implicit val itemEncoder: JsonEncoder[Item]     = DeriveJsonEncoder.gen[Item]
 
   implicit val updateItemDecoder: JsonDecoder[UpdateItemRequest] = DeriveJsonDecoder.gen[UpdateItemRequest]
+
+  implicit val loginDecoder: JsonDecoder[LoginRequest]                = DeriveJsonDecoder.gen[LoginRequest]
+  implicit val loginResponseEncoder: JsonEncoder[AuthenticatedEntity] = DeriveJsonEncoder.gen[AuthenticatedEntity]
 
   implicit val partialUpdateItemDecoder: JsonDecoder[PartialUpdateItemRequest] =
     DeriveJsonDecoder.gen[PartialUpdateItemRequest]

@@ -1,8 +1,9 @@
 package vn.ventures.root
 
 import io.getquill.jdbczio.Quill
-import io.getquill.Literal
-import vn.ventures.primaryAdapter.controllers.{HealthCheckController, ItemController}
+import io.getquill.SnakeCase
+import vn.ventures.primaryAdapter.controllers.*
+import vn.ventures.secondaryAdapter.authentication.AuthRepoLive
 import vn.ventures.secondaryAdapter.{HealthCheckServiceLive, ItemRepositoryLive}
 import zio.*
 import zio.http.Server
@@ -14,9 +15,10 @@ object Main extends ZIOAppDefault {
 
   private val dataSourceLayer = Quill.DataSource.fromPrefix("db")
 
-  private val postgresLayer = Quill.Postgres.fromNamingStrategy(Literal)
+  private val mysqlLayer = Quill.Mysql.fromNamingStrategy(SnakeCase)
 
-  private val repoLayer = ItemRepositoryLive.layer
+  private val repoLayers = ItemRepositoryLive.layer
+    ++ AuthRepoLive.layer
 
   private val healthCheckServiceLayer = HealthCheckServiceLive.layer
 
@@ -28,18 +30,21 @@ object Main extends ZIOAppDefault {
       }
       .orDie
 
-  private val routes = ItemController.routes ++ HealthCheckController.routes
+  private val routes = ItemController.routes
+    ++ HealthCheckController.routes
+    ++ AuthenticationController.routes
+    ++ AuthenticationController.test
 
   private val program = Server.serve(routes)
 
-  override val run: ZIO[Any, Throwable, Nothing] =
+  override val run: ZIO[Any, Throwable, Nothing] = {
     program.provide(
       healthCheckServiceLayer,
       serverLayer,
       ApiConfig.layer,
-      repoLayer,
-      postgresLayer,
+      repoLayers,
+      mysqlLayer,
       dataSourceLayer
     )
-
+  }
 }

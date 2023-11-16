@@ -5,7 +5,7 @@ import io.getquill.jdbczio.Quill
 import vn.ventures.domain.healthckeck.{DbStatus, HealthCheckService}
 import zio.*
 
-final class HealthCheckServiceLive(quill: Quill.Postgres[Literal]) extends HealthCheckService {
+final class HealthCheckServiceLive(quill: Quill.Mysql[SnakeCase]) extends HealthCheckService {
 
   import quill.*
 
@@ -23,9 +23,9 @@ final class HealthCheckServiceLive(quill: Quill.Postgres[Literal]) extends Healt
 
 object HealthCheckServiceLive {
 
-  val layer: URLayer[Quill.Postgres[Literal], HealthCheckServiceLive] = ZLayer {
+  val layer: URLayer[Quill.Mysql[SnakeCase], HealthCheckServiceLive] = ZLayer {
     for {
-      quill <- ZIO.service[Quill.Postgres[Literal]]
+      quill <- ZIO.service[Quill.Mysql[SnakeCase]]
     } yield HealthCheckServiceLive(quill)
   }
 }

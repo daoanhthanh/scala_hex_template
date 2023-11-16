@@ -1,50 +1,44 @@
 import Dependencies.*
 
-//lazy val root = project
-//  .in(file("."))
-//  .settings(
-//    name := "b_api_new_zio",
-//    version := "0.1.0-SNAPSHOT",
-//
-//    scalaVersion := scala3Version,
-//
-//    libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test
-//  )
-
-name := """b_api_new_zio"""
+name         := """b_api_new_zio"""
 organization := "vn.designtool"
 
-version := "1.0-SNAPSHOT"
+version := "0.0.1-SNAPSHOT"
 
 ThisBuild / scalaVersion := "3.3.1"
-
 lazy val runMigrate = taskKey[Unit]("Migrates the database schema.")
-addCommandAlias("run-db-migrations", "runMigrate")
 
 lazy val root = (project in file("."))
   .aggregate(domain, primaryAdapter, secondaryAdapter, utility)
   .dependsOn(domain, primaryAdapter, secondaryAdapter, utility)
   .settings(
-    Compile / scalaSource := baseDirectory.value / "src" / "main" / "scala",
-    Compile / resourceDirectory := baseDirectory.value / "src" / "main" / "resources",
+    Compile / scalaSource         := baseDirectory.value / "src" / "main" / "scala",
+    Compile / resourceDirectory   := baseDirectory.value / "src" / "main" / "resources",
     Global / onChangedBuildSource := ReloadOnSourceChanges,
     libraryDependencies ++= logDependencies,
+    runMigrate / fork := true,
+    commands ++= Seq(
+      SbtCommands.greet
+    ),
     fullRunTask(runMigrate, Compile, "vn.ventures.secondaryAdapter.flyway.DBMigrationsCommand"),
-    fork in runMigrate := true
+    addCommandAlias("run-db-migrations", "runMigrate"),
+    addCommandAlias("start", "; greet ; run-db-migrations ; run")
   )
 
 lazy val domain = (project in file("app/domain"))
   .settings(
-    resolvers +=
-      "Sonatype OSS Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots",
     libraryDependencies ++= defaultDependencies
+      :+ snowflakeID
   )
 
 lazy val primaryAdapter = (project in file("app/primaryAdapter"))
   .dependsOn(domain, utility)
   .settings(
+    resolvers +=
+      "Sonatype OSS Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots",
     libraryDependencies ++= defaultDependencies,
-    libraryDependencies ++= primaryAdapterDependencies
+    // TODO: here!!
+    libraryDependencies ++= primaryAdapterDependencies :+ snowflake4s.cross(CrossVersion.for3Use2_13)
   )
 
 lazy val secondaryAdapter = (project in file("app/secondaryAdapter"))

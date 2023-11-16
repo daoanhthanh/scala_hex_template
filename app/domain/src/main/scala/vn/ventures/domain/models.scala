@@ -1,11 +1,11 @@
 package vn.ventures.domain
 
-final case class ItemId(value: Long)
+final case class ItemId(value: Long) extends AnyVal
 
 final case class ItemData(name: String, price: BigDecimal)
 
 final case class Item(
-    id: Long,
+    id: ItemId,
     name: String,
     price: BigDecimal
 ) {
@@ -14,7 +14,7 @@ final case class Item(
 }
 
 object Item {
-  def withData(id: Long, data: ItemData): Item = Item(
+  def withData(id: ItemId, data: ItemData): Item = Item(
     id,
     data.name,
     data.price

@@ -2,72 +2,73 @@ package vn.ventures.primaryAdapter.controllers
 
 import vn.ventures.primaryAdapter.utils.Extensions.*
 import vn.ventures.domain.*
-import vn.ventures.primaryAdapter.utils.Utils
+import vn.ventures.primaryAdapter.forms.*
+import vn.ventures.primaryAdapter.utils.{Extractor, Utils}
 import zio.*
 import zio.http.*
 import zio.json.*
 
 object ItemController extends JsonSupport {
   val routes: HttpApp[ItemRepository, Nothing] = Http.collectZIO {
-    case Method.GET -> !! / "items" =>
+    case Method.GET -> _ / "items" =>
       val effect: ZIO[ItemRepository, DomainError, List[Item]] =
         ItemService.getAllItems
 
-      effect.foldZIO(Utils.handleError, _.toResponseZIO)
+      effect.foldZIO(Utils.handleError, _.toResponse)
 
-    case Method.GET -> !! / "items" / itemId =>
+    case Method.GET -> _ / "items" / itemId =>
       val effect: ZIO[ItemRepository, DomainError, Item] =
         for {
-          id        <- Utils.extractLong(itemId)
-          maybeItem <- ItemService.getItemById(id)
+          id        <- Extractor.extractLong(itemId)
+          maybeItem <- ItemService.getItemById(ItemId(id))
           item <- maybeItem
             .map(ZIO.succeed(_))
             .getOrElse(ZIO.fail(NotFoundError))
         } yield item
 
-      effect.foldZIO(Utils.handleError, _.toResponseZIO)
+      effect.foldZIO(Utils.handleError, _.toResponse)
 
-    case Method.DELETE -> !! / "items" / itemId =>
+    case Method.DELETE -> _ / "items" / itemId =>
       val effect: ZIO[ItemRepository, DomainError, Unit] =
         for {
-          id     <- Utils.extractLong(itemId)
-          amount <- ItemService.deleteItem(id)
+          id     <- Extractor.extractLong(itemId)
+          amount <- ItemService.deleteItem(ItemId(id))
           _ <-
             if (amount == 0) ZIO.fail(NotFoundError)
             else ZIO.unit
         } yield ()
 
-      effect.foldZIO(Utils.handleError, _.toEmptyResponseZIO)
+      effect.foldZIO(Utils.handleError, _.toEmptyResponse)
 
-    case req @ Method.POST -> !! / "items" =>
+    case req @ Method.POST -> _ / "items" =>
       val effect: ZIO[ItemRepository, DomainError, Item] =
         for {
           createItem <- req.jsonBodyAs[CreateItemRequest]
           itemId     <- ItemService.addItem(createItem.name, createItem.price)
         } yield Item(itemId, createItem.name, createItem.price)
 
-      effect.foldZIO(Utils.handleError, _.toResponseZIO(Status.Created))
+      effect.foldZIO(Utils.handleError, _.toResponse(Status.Created))
 
-    case req @ Method.PUT -> !! / "items" / itemId =>
+    case req @ Method.PUT -> _ / "items" / itemId =>
       val effect: ZIO[ItemRepository, DomainError, Item] =
         for {
-          id         <- Utils.extractLong(itemId)
+          id         <- Extractor.extractLong(itemId)
           updateItem <- req.jsonBodyAs[UpdateItemRequest]
-          maybeItem  <- ItemService.updateItem(id, updateItem.name, updateItem.price)
+          maybeItem  <- ItemService.updateItem(ItemId(id), updateItem.name, updateItem.price)
           item <- maybeItem
             .map(ZIO.succeed(_))
             .getOrElse(ZIO.fail(NotFoundError))
         } yield item
 
-      effect.foldZIO(Utils.handleError, _.toResponseZIO)
+      effect.foldZIO(Utils.handleError, _.toResponse)
 
-    case req @ Method.PATCH -> !! / "items" / itemId =>
+    case req @ Method.PATCH -> _ / "items" / itemId =>
       val effect: ZIO[ItemRepository, DomainError, Item] =
         for {
-          id                <- Utils.extractLong(itemId)
+          id                <- Extractor.extractLong(itemId)
           partialUpdateItem <- req.jsonBodyAs[PartialUpdateItemRequest]
           maybeItem <- ItemService.partialUpdateItem(
-            id = id,
+            id = ItemId(id),
             name = partialUpdateItem.name,
             price = partialUpdateItem.price
           )
@@ -76,7 +77,7 @@ object ItemController extends JsonSupport {
             .getOrElse(ZIO.fail(NotFoundError))
         } yield item
 
-      effect.foldZIO(Utils.handleError, _.toResponseZIO)
+      effect.foldZIO(Utils.handleError, _.toResponse)
 
   }
 

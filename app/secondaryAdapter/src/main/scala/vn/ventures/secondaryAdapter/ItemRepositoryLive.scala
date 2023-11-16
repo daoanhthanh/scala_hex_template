@@ -3,11 +3,11 @@ package vn.ventures.secondaryAdapter
 import io.getquill.*
 import io.getquill.jdbczio.Quill
 import vn.ventures.domain.*
-import zio.{IO, URLayer, ZIO, ZLayer}
+import zio.*
 
 import java.sql.SQLException
 
-final class ItemRepositoryLive(quill: Quill.Postgres[Literal]) extends ItemRepository:
+final class ItemRepositoryLive(quill: Quill.Mysql[SnakeCase]) extends ItemRepository {
 
   import quill.*
 
@@ -15,49 +15,50 @@ final class ItemRepositoryLive(quill: Quill.Postgres[Literal]) extends ItemRepos
     querySchema[Item]("items")
   }
 
-  override def add(data: ItemData): IO[RepositoryError, Long] =
-    val effect: IO[SQLException, Long] = run {
+  override def add(data: ItemData): IO[RepositoryError, ItemId] = {
+    val effect: IO[SQLException, ItemId] = run {
       quote {
         items
-          .insertValue(lift(Item.withData(0, data)))
+          .insertValue(lift(Item.withData(ItemId(0), data)))
           .returningGenerated(_.id)
       }
     }
 
-    effect
-      .either
-      .resurrect
-      .refineOrDie {
-        case e: NullPointerException => RepositoryError(e)
+    effect.either.resurrect
+      .refineOrDie { case e: NullPointerException =>
+        RepositoryError(e)
       }
       .flatMap {
         case Left(e: SQLException) => ZIO.fail(RepositoryError(e))
-        case Right(itemId: Long) => ZIO.succeed(itemId)
+        case Right(itemId: ItemId) => ZIO.succeed(itemId)
       }
+  }
 
-  override def delete(id: Long): IO[RepositoryError, Long] =
+  override def delete(id: ItemId): IO[RepositoryError, Long] = {
     val effect: IO[SQLException, Long] = run {
       quote {
         items.filter(i => i.id == lift(id)).delete
       }
     }
 
-    effect.refineOrDie {
-      case e: SQLException => RepositoryError(e)
+    effect.refineOrDie { case e: SQLException =>
+      RepositoryError(e)
     }
+  }
 
-  override def getAll: IO[RepositoryError, List[Item]] =
+  override def getAll: IO[RepositoryError, List[Item]] = {
     val effect: IO[SQLException, List[Item]] = run {
       quote {
         items
       }
     }
 
-    effect.refineOrDie {
-      case e: SQLException => RepositoryError(e)
+    effect.refineOrDie { case e: SQLException =>
+      RepositoryError(e)
     }
+  }
 
-  override def getById(id: Long): IO[RepositoryError, Option[Item]] =
+  override def getById(id: ItemId): IO[RepositoryError, Option[Item]] = {
     val effect: IO[SQLException, List[Item]] = run {
       quote {
         items.filter(_.id == lift(id))
@@ -66,11 +67,12 @@ final class ItemRepositoryLive(quill: Quill.Postgres[Literal]) extends ItemRepos
 
     effect
       .map(_.headOption)
-      .refineOrDie {
-        case e: SQLException => RepositoryError(e)
+      .refineOrDie { case e: SQLException =>
+        RepositoryError(e)
       }
+  }
 
-  override def update(itemId: Long, data: ItemData): IO[RepositoryError, Option[Unit]] =
+  override def update(itemId: ItemId, data: ItemData): IO[RepositoryError, Option[Unit]] = {
     val effect: IO[SQLException, Long] = run {
       quote {
         items
@@ -81,14 +83,17 @@ final class ItemRepositoryLive(quill: Quill.Postgres[Literal]) extends ItemRepos
 
     effect
       .map(n => if (n > 0) Some(()) else None)
-      .refineOrDie {
-        case e: SQLException => RepositoryError(e)
+      .refineOrDie { case e: SQLException =>
+        RepositoryError(e)
       }
+  }
+}
 
-object ItemRepositoryLive:
+object ItemRepositoryLive {
 
-  val layer: URLayer[Quill.Postgres[Literal], ItemRepository] = ZLayer {
+  val layer: URLayer[Quill.Mysql[SnakeCase], ItemRepository] = ZLayer {
     for {
-      quill <- ZIO.service[Quill.Postgres[Literal]]
+      quill <- ZIO.service[Quill.Mysql[SnakeCase]]
     } yield ItemRepositoryLive(quill)
   }
+}
