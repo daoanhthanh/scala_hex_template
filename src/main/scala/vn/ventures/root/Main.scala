@@ -6,7 +6,7 @@ import vn.ventures.primaryAdapter.controllers.*
 import vn.ventures.secondaryAdapter.authentication.AuthRepoLive
 import vn.ventures.secondaryAdapter.{HealthCheckServiceLive, ItemRepositoryLive}
 import zio.*
-import zio.http.Server
+import zio.http.{HttpAppMiddleware, Server}
 import zio.logging.backend.SLF4J
 
 object Main extends ZIOAppDefault {
@@ -35,7 +35,7 @@ object Main extends ZIOAppDefault {
     ++ AuthenticationController.routes
     ++ AuthenticationController.test
 
-  private val program = Server.serve(routes)
+  private val program = Server.serve(routes @@ HttpAppMiddleware.debug)
 
   override val run: ZIO[Any, Throwable, Nothing] = {
     program.provide(
