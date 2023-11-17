@@ -38,14 +38,14 @@ lazy val primaryAdapter = (project in file("app/primaryAdapter"))
       "Sonatype OSS Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots",
     libraryDependencies ++= defaultDependencies,
     // TODO: here!!
-    libraryDependencies ++= primaryAdapterDependencies :+ snowflake4s.cross(CrossVersion.for3Use2_13)
+    libraryDependencies ++= primaryAdapterDependencies :+ snowflake4s
   )
 
 lazy val secondaryAdapter = (project in file("app/secondaryAdapter"))
   .dependsOn(domain, utility)
   .settings(
     libraryDependencies ++= defaultDependencies,
-    libraryDependencies ++= dbDependencies
+    libraryDependencies ++= dbDependencies :+ snowflake4s
   )
 
 lazy val utility = (project in file("app/utility"))

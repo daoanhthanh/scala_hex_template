@@ -16,7 +16,7 @@ object HealthCheckController:
     case Method.GET -> !! / "healthcheck" =>
       HealthCheckService.check.map { dbStatus =>
         if (dbStatus.status) Response.text("OK").withStatus(Status.Ok)
-        else Response.status(Status.Custom(555))
+        else Response.status(Status.InternalServerError)
       }
 
   }

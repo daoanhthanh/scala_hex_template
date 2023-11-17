@@ -36,7 +36,7 @@ private final case class AdminRecord(
 
 case class AdminDAO(quill: Quill.Mysql[SnakeCase]) {
 
-  import quill._
+  import quill.*
 
   private def admins: Quoted[EntityQuery[AdminRecord]] = quote {
     querySchema[AdminRecord]("admins")
