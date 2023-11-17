@@ -39,7 +39,7 @@ private[primaryAdapter] object Extensions {
 
     private def handleDomainError(err: DomainError): UIO[Response] = {
       err match {
-        case e: RepositoryError => handleUnhandledError(e)
+        case e: RepositoryError   => handleUnhandledError(e)
         case _ =>
           ZIO.succeed(
             Response

@@ -1,7 +1,6 @@
 package vn.ventures.primaryAdapter.utils
 
 import vn.ventures.primaryAdapter.utils.Extensions.*
-import vn.ventures.domain.*
 import zio.*
 import zio.http.*
 
@@ -9,6 +8,17 @@ private[primaryAdapter] object Utils:
 
   def handleError(err: Throwable): UIO[Response] = {
     err.toErrResponse
+  }
+
+  def handleError(f: Task[Nothing]): UIO[Response] = {
+    f.foldZIO(
+      err => err.toErrResponse,
+      _ =>
+        RuntimeException(
+          """Is is supposed to be an 'vn.ventures.domain.DomainError'
+            |or an Exception here, but got Nothing.""".stripMargin
+        ).toErrResponse
+    )
   }
 
   def logDeviceInfo(accountId: String, request: Request): Unit = {

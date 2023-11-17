@@ -1,5 +1,6 @@
 package vn.ventures.root
 
+import com.softwaremill.id.DefaultIdGenerator
 import io.getquill.jdbczio.Quill
 import io.getquill.SnakeCase
 import vn.ventures.primaryAdapter.controllers.*
@@ -30,6 +31,11 @@ object Main extends ZIOAppDefault {
       }
       .orDie
 
+  private val idGeneratorLayer: ULayer[DefaultIdGenerator] = ZLayer
+    .succeed {
+      new DefaultIdGenerator(epoch = 1700249724L)
+    }
+
   private val routes = ItemController.routes
     ++ HealthCheckController.routes
     ++ AuthenticationController.routes
@@ -44,7 +50,8 @@ object Main extends ZIOAppDefault {
       ApiConfig.layer,
       repoLayers,
       mysqlLayer,
-      dataSourceLayer
+      dataSourceLayer,
+      idGeneratorLayer
     )
   }
 }

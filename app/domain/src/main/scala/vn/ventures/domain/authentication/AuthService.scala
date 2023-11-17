@@ -15,6 +15,8 @@ object AuthService:
       user <- ZIO
         .fromOption(maybeUser)
         .orElseFail(ValidationError("Wrong login_id or key"))
-      _ <- ZIO.fail(ValidationError("Wrong login_id or key"))
+      _ <- ZIO
+        .fail(ValidationError("Wrong login_id or key"))
         .when(user.encryptedPassword != password)
+
     } yield user.toAuthenticatedEntity
