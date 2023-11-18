@@ -40,11 +40,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setTimeout(function () {
         const animatedText = document.getElementById('animatedText');
-        const reference = document.getElementById('reference');
         animatedText.style.display = 'block';
-        reference.style.display = 'block';
         animatedText.style.animation = 'increaseSize 1.5s linear alternate';
     }, 2400);
+
+
+    setTimeout(function () {
+        const reference = document.getElementById('reference');
+        reference.style.display = 'block';
+        reference.style.animation = 'ase-in 0.9s linear alternate';
+    }, 4200);
 
     setInterval(draw, 30);
 })

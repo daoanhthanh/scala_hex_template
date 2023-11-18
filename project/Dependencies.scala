@@ -43,7 +43,6 @@ object Dependencies {
   )
   lazy val bcryptDependency = "org.mindrot"               % "jbcrypt"           % "0.4"
   lazy val paseto           = "io.github.nbaars"          % "paseto4j-version3" % "2023.1"
-  lazy val snowflakeID      = "de.mkammerer.snowflake-id" % "snowflake-id"      % "0.0.2"
   lazy val snowflake4s      = "com.softwaremill.common"  %% "id-generator"      % "1.4.0"
   val zioVersion            = "2.0.13"
   val zioJsonVersion        = "0.5.0"

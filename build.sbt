@@ -20,6 +20,7 @@ lazy val root = (project in file("."))
     commands ++= Seq(
       SbtCommands.greet
     ),
+    mainClass in (Compile, run) := Some("vn.ventures.root.Main"),
     fullRunTask(runMigrate, Compile, "vn.ventures.secondaryAdapter.flyway.DBMigrationsCommand"),
     addCommandAlias("run-db-migrations", "runMigrate"),
     addCommandAlias("start", "; greet ; run-db-migrations ; run")
@@ -29,7 +30,7 @@ lazy val domain = (project in file("app/domain"))
   .disablePlugins(RevolverPlugin)
   .settings(
     libraryDependencies ++= defaultDependencies
-      :+ snowflakeID
+      :+ snowflake4s
   )
 
 lazy val primaryAdapter = (project in file("app/primaryAdapter"))
@@ -39,7 +40,6 @@ lazy val primaryAdapter = (project in file("app/primaryAdapter"))
     resolvers +=
       "Sonatype OSS Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots",
     libraryDependencies ++= defaultDependencies,
-    // TODO: here!!
     libraryDependencies ++= primaryAdapterDependencies :+ snowflake4s
   )
 
