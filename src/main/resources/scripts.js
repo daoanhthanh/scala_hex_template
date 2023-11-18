@@ -40,7 +40,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setTimeout(function () {
         const animatedText = document.getElementById('animatedText');
+        const reference = document.getElementById('reference');
         animatedText.style.display = 'block';
+        reference.style.display = 'block';
         animatedText.style.animation = 'increaseSize 1.5s linear alternate';
     }, 2400);
 

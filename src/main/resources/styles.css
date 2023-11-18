@@ -28,6 +28,23 @@ h1 {
     display: none;
 }
 
+#reference {
+    display: none;
+}
+
+a {
+    position: fixed;
+    bottom: 1rem;
+    color: rgba(64, 121, 27, 0.6);
+    /*text-decoration: none;*/
+    font-size: 50px;
+}
+
+a:hover {
+    color: rgba(64, 121, 27, 1);
+    text-decoration: underline;
+}
+
 @keyframes increaseSize {
     from {
         font-size: 0;

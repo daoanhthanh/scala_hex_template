@@ -38,7 +38,13 @@ object HealthCheckController {
     Response.html(
       withHtmlContent(
         canvas(idAttr := "Matrix"),
-        h1(idAttr     := "animatedText", s"Hello $currentUser!")
+        h1(idAttr     := "animatedText", s"Hello $currentUser!"),
+        a(
+          idAttr     := "reference",
+          targetAttr := "_blank",
+          hrefAttr   := "https://zio.dev/overview/summary",
+          "Learn ZIO here 🚀"
+        )
       )
     )
   }
