@@ -36,9 +36,10 @@ create table admins
 create index identify_2
     on admins (identify);
 
-
+ /*
 insert into admins (identify, account_id, email, name, password, created_at)
 values ('f2018601-5761-4d53-93fb-583449936f75', 'Ahihi', 'ahihi@gmail.com', 'Ahihi',
         '123456', now()),
        ('f2018601-5761-4d53-93fb-583449936f76', 'do_ngok', 'y_marutani@septeniventures.co.jp', '丸谷　陽介',
         '654321', now());
+*/

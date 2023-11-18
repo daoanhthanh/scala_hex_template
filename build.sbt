@@ -26,12 +26,14 @@ lazy val root = (project in file("."))
   )
 
 lazy val domain = (project in file("app/domain"))
+  .disablePlugins(RevolverPlugin)
   .settings(
     libraryDependencies ++= defaultDependencies
       :+ snowflakeID
   )
 
 lazy val primaryAdapter = (project in file("app/primaryAdapter"))
+  .disablePlugins(RevolverPlugin)
   .dependsOn(domain, utility)
   .settings(
     resolvers +=
@@ -42,6 +44,7 @@ lazy val primaryAdapter = (project in file("app/primaryAdapter"))
   )
 
 lazy val secondaryAdapter = (project in file("app/secondaryAdapter"))
+  .disablePlugins(RevolverPlugin)
   .dependsOn(domain, utility)
   .settings(
     libraryDependencies ++= defaultDependencies,
@@ -49,6 +52,7 @@ lazy val secondaryAdapter = (project in file("app/secondaryAdapter"))
   )
 
 lazy val utility = (project in file("app/utility"))
+  .disablePlugins(RevolverPlugin)
   .dependsOn(domain)
   .settings(
     libraryDependencies ++= defaultDependencies,

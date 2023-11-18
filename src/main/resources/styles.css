@@ -1,0 +1,38 @@
+:root {
+  font-size: 9rem;
+}
+
+
+html {
+    background: black;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: "Source Code Pro", monospace;
+}
+
+h1 {
+    font-size: var(--font-size);
+    position: fixed;
+    /*color: #40791b;*/
+    color: rgba(64, 121, 27, 0.6);
+    display: none;
+}
+
+@keyframes increaseSize {
+    from {
+        font-size: 0;
+    }
+    to {
+        font-size: var(--font-size);
+    }
+}

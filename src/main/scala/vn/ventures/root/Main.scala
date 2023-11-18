@@ -1,13 +1,13 @@
 package vn.ventures.root
 
 import com.softwaremill.id.DefaultIdGenerator
-import io.getquill.jdbczio.Quill
 import io.getquill.SnakeCase
+import io.getquill.jdbczio.Quill
 import vn.ventures.primaryAdapter.controllers.*
 import vn.ventures.secondaryAdapter.authentication.AuthRepoLive
 import vn.ventures.secondaryAdapter.{HealthCheckServiceLive, ItemRepositoryLive}
 import zio.*
-import zio.http.Server
+import zio.http.{HttpAppMiddleware, Server}
 import zio.logging.backend.SLF4J
 
 object Main extends ZIOAppDefault {
@@ -38,20 +38,28 @@ object Main extends ZIOAppDefault {
 
   private val routes = ItemController.routes
     ++ HealthCheckController.routes
+    ++ HealthCheckController.helloWorld
+    ++ HealthCheckController.makeWebAssets
     ++ AuthenticationController.routes
     ++ AuthenticationController.test
 
-  private val program = Server.serve(routes)
-
   override val run: ZIO[Any, Throwable, Nothing] = {
-    program.provide(
-      healthCheckServiceLayer,
-      serverLayer,
-      ApiConfig.layer,
-      repoLayers,
-      mysqlLayer,
-      dataSourceLayer,
-      idGeneratorLayer
-    )
+    for {
+      port <- ZIO.serviceWith[ApiConfig](_.port).provide(ApiConfig.layer)
+      _    <- ZIO.logInfo(s"Application started. Please visit http://localhost:$port")
+      app <- Server
+        .serve(routes @@ HttpAppMiddleware.debug)
+        .provide(
+          healthCheckServiceLayer,
+          serverLayer,
+          ApiConfig.layer,
+          repoLayers,
+          mysqlLayer,
+          dataSourceLayer,
+          idGeneratorLayer
+        )
+
+    } yield app
+
   }
 }
